@@ -25,18 +25,21 @@ let clients = [];
 // Define what happens when a client connects
 io.on("connection", (socket) => {
   console.log("New client connected: ", socket.id);
-  clients.push(socket.id);
+  clients.push({ id: socket.id, user: "other" });
   io.emit("connected_clients", clients);
 
   // Listen for "send_message" events from clients
   socket.on("send_message", (message) => {
-    io.emit("message", message);
+    const sender = clients.find((client) => client.id === socket.id);
+    // Adding user to the message object
+    const userMessage = { ...message, user: sender ? sender.user : "other" };
+    io.emit("message", userMessage);
   });
 
   // Listen for disconnect events
   socket.on("disconnect", () => {
     console.log("Client disconnected: ", socket.id);
-    clients = clients.filter((client) => client !== socket.id);
+    clients = clients.filter((client) => client.id !== socket.id);
     io.emit("connected_clients", clients);
   });
 });
