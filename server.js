@@ -32,7 +32,7 @@ io.on("connection", (socket) => {
   socket.on("send_message", (message) => {
     const sender = clients.find((client) => client.id === socket.id);
     // Adding user to the message object
-    const userMessage = { ...message, user: sender ? sender.user : "other" };
+    const userMessage = { ...message, user: sender ? "me" : "other" };
     io.emit("message", userMessage);
   });
 
